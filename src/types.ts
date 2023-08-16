@@ -50,6 +50,13 @@ export abstract class Type<T> {
     }
     return new NullableType(this);
   }
+  nullish(): NullishType<this>;
+  nullish(): any {
+    if (this instanceof NullishType) {
+      return clone(this);
+    }
+    return new NullishType(this);
+  }
   try(value: unknown): T | ValidationError {
     try {
       return (this as any).parse.apply(this, arguments);
@@ -288,6 +295,10 @@ const withDefault = (schema: any, value: any) => {
 export type StringOptions = {
   min?: number;
   max?: number;
+  /**
+   * usually for number input coerce to a string, or sometimes uuid v4 uppercase should coerce to lower and vice versa
+   */
+  coerce?: boolean | 'lower' | 'upper';
   pattern?: RegExp;
   valid?: string[];
   predicate?: Predicate<string>['func'] | Predicate<string> | Predicate<string>[];
@@ -297,10 +308,12 @@ export type StringOptions = {
 export class StringType extends Type<string> implements WithPredicate<string>, Defaultable<string> {
   private predicates: Predicate<string>[] | null;
   private defaultValue?: string | (() => string);
+  private coerceFlag?: boolean | 'lower' | 'upper';
   constructor(opts?: StringOptions) {
     super();
     this.predicates = normalizePredicates(opts?.predicate);
     this.defaultValue = opts?.default;
+    this.coerceFlag = opts?.coerce;
     (this as any)[coercionTypeSymbol] = opts?.default !== undefined;
     let self: StringType = this;
     if (typeof opts?.min !== 'undefined') {
@@ -318,13 +331,20 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
     return self;
   }
   parse(value: unknown = typeof this.defaultValue === 'function' ? this.defaultValue() : this.defaultValue): string {
-    if (typeof value !== 'string') {
+    let coercedValue: string = value as any;
+    if (this.coerceFlag === true && typeof value === 'number') {
+      coercedValue = value.toString();
+    } else if(this.coerceFlag === 'lower') {
+      coercedValue = coercedValue.toLowerCase();
+    } else if(this.coerceFlag === 'upper') {
+      coercedValue = coercedValue.toUpperCase();
+    } else if (typeof value !== 'string') {
       throw this.typeError('expected type to be string but got ' + typeOf(value));
     }
     if (this.predicates) {
-      applyPredicates(this.predicates, value);
+      applyPredicates(this.predicates, coercedValue);
     }
-    return value;
+    return coercedValue;
   }
   and<K extends AnyType>(schema: K): IntersectionType<this, K> {
     return new IntersectionType(this, schema);
@@ -349,6 +369,13 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
       errMsg ||
         ((value: string) => `expected string to have length less than or equal to ${x} but had length ${value.length}`)
     );
+  }
+  coerce(transform: boolean | 'lower' | 'upper' = true) {
+    return new StringType({
+      predicate: this.predicates || undefined,
+      coerce: transform,
+      default: this.defaultValue,
+    });
   }
   valid(list: string[], errMsg?: ErrMsg<string>): StringType {
     return this.withPredicate(
@@ -625,6 +652,38 @@ export class NullableType<T extends AnyType> extends Type<Infer<T> | null> imple
     return clone(this.schema);
   }
   default(value: Nullable<Infer<T>> | (() => Nullable<Infer<T>>)) {
+    return withDefault(this, value);
+  }
+}
+
+type Nullish<T> = T | null | undefined;
+export class NullishType<T extends AnyType> extends Type<Infer<T> | null | undefined> implements Defaultable<Infer<T> | null> {
+  private readonly defaultValue?: Nullish<Infer<T>> | (() => Nullish<Infer<T>>);
+  constructor(readonly schema: T) {
+    super();
+    (this as any)[coercionTypeSymbol] = (this.schema as any)[coercionTypeSymbol];
+    (this as any)[shapekeysSymbol] = (this.schema as any)[shapekeysSymbol];
+    (this as any)[allowUnknownSymbol] = (this.schema as any)[allowUnknownSymbol];
+  }
+  parse(
+    //@ts-ignore
+    value: unknown = typeof this.defaultValue === 'function' ? this.defaultValue() : this.defaultValue
+  ): Infer<T> | null | undefined {
+    if (value === null) {
+      return null;
+    }
+    if(value === undefined) {
+      return undefined
+    }
+    return this.schema.parse(value);
+  }
+  and<K extends AnyType>(schema: K): IntersectionType<this, K> {
+    return new IntersectionType(this, schema);
+  }
+  required(): T {
+    return clone(this.schema);
+  }
+  default(value: Nullish<Infer<T>> | (() => Nullish<Infer<T>>)) {
     return withDefault(this, value);
   }
 }
