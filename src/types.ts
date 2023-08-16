@@ -299,6 +299,10 @@ export type StringOptions = {
    * usually for number input coerce to a string, or sometimes uuid v4 uppercase should coerce to lower and vice versa
    */
   coerce?: boolean | 'lower' | 'upper';
+  /**
+   * enable to trim before and after spaces, or pass in character to trim
+   */
+  trim?: boolean | string;
   pattern?: RegExp;
   valid?: string[];
   predicate?: Predicate<string>['func'] | Predicate<string> | Predicate<string>[];
@@ -309,11 +313,13 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
   private predicates: Predicate<string>[] | null;
   private defaultValue?: string | (() => string);
   private coerceFlag?: boolean | 'lower' | 'upper';
+  private trimFlag?: boolean | string;
   constructor(opts?: StringOptions) {
     super();
     this.predicates = normalizePredicates(opts?.predicate);
     this.defaultValue = opts?.default;
     this.coerceFlag = opts?.coerce;
+    this.trimFlag = opts?.trim;
     (this as any)[coercionTypeSymbol] = opts?.default !== undefined;
     let self: StringType = this;
     if (typeof opts?.min !== 'undefined') {
@@ -340,6 +346,9 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
       coercedValue = coercedValue.toUpperCase();
     } else if (typeof value !== 'string') {
       throw this.typeError('expected type to be string but got ' + typeOf(value));
+    }
+    if(this.trimFlag) {
+      coercedValue = coercedValue.trim();
     }
     if (this.predicates) {
       applyPredicates(this.predicates, coercedValue);
@@ -370,12 +379,13 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
         ((value: string) => `expected string to have length less than or equal to ${x} but had length ${value.length}`)
     );
   }
+  trim(trim: boolean | string = true) {
+    this.trimFlag = trim;
+    return this;
+  }
   coerce(transform: boolean | 'lower' | 'upper' = true) {
-    return new StringType({
-      predicate: this.predicates || undefined,
-      coerce: transform,
-      default: this.defaultValue,
-    });
+    this.coerceFlag = transform;
+    return this;
   }
   valid(list: string[], errMsg?: ErrMsg<string>): StringType {
     return this.withPredicate(
