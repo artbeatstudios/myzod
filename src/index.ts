@@ -1,5 +1,6 @@
-import { IntersectionType } from './types';
 import {
+  AnyTypeClass,
+  IntersectionType,
   ValidationError,
   Type,
   StringType,
@@ -59,6 +60,7 @@ export {
   MappedType,
   DateType,
   UnknownType,
+  AnyTypeClass,
   UnionType,
   IntersectionType,
 } from './types';
@@ -71,6 +73,7 @@ export const boolean = () => new BooleanType();
 export const number = (opts?: NumberOptions) => new NumberType(opts);
 export const bigint = (opts?: BigIntOptions) => new BigIntType(opts);
 export const unknown = () => new UnknownType();
+export const any = () => new AnyTypeClass();
 export const literal = <T extends Literal>(literal: T) => new LiteralType(literal);
 export const object = <T extends ObjectShape>(shape: T, opts?: ObjectOptions<T>) => new ObjectType(shape, opts);
 export const array = <T extends AnyType>(schema: T, opts?: ArrayOptions<T>) => new ArrayType(schema, opts);
@@ -175,6 +178,7 @@ export default {
   omit,
   required,
   lazy,
+  any,
   undefined: undefinedValue,
   null: nullValue,
   enum: enumValue,
@@ -194,6 +198,7 @@ export default {
   OptionalType,
   DateType,
   UnknownType,
+  AnyTypeClass,
   UnionType,
   IntersectionType,
 };

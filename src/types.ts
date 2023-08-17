@@ -614,7 +614,21 @@ export class UnknownType extends Type<unknown> implements Defaultable<unknown> {
     return withDefault(this, value);
   }
 }
-
+export class AnyTypeClass extends Type<any> implements Defaultable<any> {
+  private readonly defaultValue?: any;
+  constructor() {
+    super();
+  }
+  parse(value: unknown = typeof this.defaultValue === 'function' ? this.defaultValue() : this.defaultValue): any {
+    return value;
+  }
+  and<K extends AnyType>(schema: K): IntersectionType<this, K> {
+    return new IntersectionType(this, schema);
+  }
+  default(value: any | (() => any)) {
+    return withDefault(this, value);
+  }
+}
 export class OptionalType<T extends AnyType> extends Type<Infer<T> | undefined> {
   constructor(readonly schema: T) {
     super();
