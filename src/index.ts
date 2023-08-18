@@ -43,9 +43,9 @@ import {
 export {
   ValidationError,
   Type,
-  Infer,
-  AnyType,
-  ObjectShape,
+  type Infer,
+  type AnyType,
+  type ObjectShape,
   // Types
   NumberType,
   BooleanType,
@@ -57,7 +57,7 @@ export {
   TupleType,
   NullableType,
   OptionalType,
-  MappedType,
+  type MappedType,
   DateType,
   UnknownType,
   AnyTypeClass,
