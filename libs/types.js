@@ -608,15 +608,17 @@ class ObjectType extends Type {
         const keys = this[shapekeysSymbol];
         const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
         if (!allowUnknown && !this.objectShape[index_1.keySignature]) {
-            const illegalKeys = [];
+            // const illegalKeys: string[] = [];
             for (const k in value) {
                 if (!keys.includes(k)) {
-                    illegalKeys.push(k);
+                    // default is to strip unknown keys
+                    delete value[k];
+                    // illegalKeys.push(k);
                 }
             }
-            if (illegalKeys.length > 0) {
-                throw this.typeError('unexpected keys on object: ' + JSON.stringify(illegalKeys));
-            }
+            // if (illegalKeys.length > 0) {
+            //   throw this.typeError('unexpected keys on object: ' + JSON.stringify(illegalKeys));
+            // }
         }
         return this._parse(value, parseOpts);
     }
