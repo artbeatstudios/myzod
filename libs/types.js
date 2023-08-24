@@ -605,21 +605,6 @@ class ObjectType extends Type {
         if (typeof value !== 'object' || value === null || Array.isArray(value)) {
             throw this.typeError('expected type to be object but got ' + typeOf(value));
         }
-        const keys = this[shapekeysSymbol];
-        const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
-        if (!allowUnknown && !this.objectShape[index_1.keySignature]) {
-            // const illegalKeys: string[] = [];
-            for (const k in value) {
-                if (!keys.includes(k)) {
-                    // default is to strip unknown keys
-                    delete value[k];
-                    // illegalKeys.push(k);
-                }
-            }
-            // if (illegalKeys.length > 0) {
-            //   throw this.typeError('unexpected keys on object: ' + JSON.stringify(illegalKeys));
-            // }
-        }
         return this._parse(value, parseOpts);
     }
     buildPathError(err, key, parseOpts) {
@@ -723,6 +708,16 @@ class ObjectType extends Type {
         }
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
+        }
+        const keys = this[shapekeysSymbol];
+        const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
+        if (allowUnknown && !this.objectShape[index_1.keySignature]) {
+            for (const k in value) {
+                if (!keys.includes(k)) {
+                    // default is to strip unknown keys
+                    convVal[k] = value[k];
+                }
+            }
         }
         return convVal;
     }
