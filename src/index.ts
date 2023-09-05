@@ -38,6 +38,7 @@ import {
   BigIntType,
   StringOptions,
   EnumOptions,
+  keySignature,
 } from './types';
 
 export {
@@ -63,10 +64,10 @@ export {
   AnyTypeClass,
   UnionType,
   IntersectionType,
+  keySignature
 } from './types';
 
-const keySignature = Symbol('keySignature');
-export { keySignature };
+
 
 export const string = (opts?: StringOptions) => new StringType(opts);
 export const boolean = () => new BooleanType();

@@ -1,4 +1,4 @@
-import { keySignature } from './index';
+export declare const keySignature: unique symbol;
 declare const typeErrSym: unique symbol;
 declare const coercionTypeSymbol: unique symbol;
 export declare abstract class Type<T> {

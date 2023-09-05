@@ -21,8 +21,7 @@ Object.defineProperty(exports, "UnknownType", { enumerable: true, get: function 
 Object.defineProperty(exports, "AnyTypeClass", { enumerable: true, get: function () { return types_2.AnyTypeClass; } });
 Object.defineProperty(exports, "UnionType", { enumerable: true, get: function () { return types_2.UnionType; } });
 Object.defineProperty(exports, "IntersectionType", { enumerable: true, get: function () { return types_2.IntersectionType; } });
-const keySignature = Symbol('keySignature');
-exports.keySignature = keySignature;
+Object.defineProperty(exports, "keySignature", { enumerable: true, get: function () { return types_2.keySignature; } });
 const string = (opts) => new types_1.StringType(opts);
 exports.string = string;
 const boolean = () => new types_1.BooleanType();
@@ -47,13 +46,13 @@ const intersection = (l, r) => l.and(r);
 exports.intersection = intersection;
 const literals = (...args) => new types_1.UnionType(args.map(exports.literal));
 exports.literals = literals;
-const record = (schema) => new types_1.ObjectType({ [keySignature]: schema });
+const record = (schema) => new types_1.ObjectType({ [types_1.keySignature]: schema });
 exports.record = record;
 const dictionary = (schema) => {
     if (schema instanceof types_1.OptionalType) {
-        return new types_1.ObjectType({ [keySignature]: schema });
+        return new types_1.ObjectType({ [types_1.keySignature]: schema });
     }
-    return new types_1.ObjectType({ [keySignature]: new types_1.OptionalType(schema) });
+    return new types_1.ObjectType({ [types_1.keySignature]: new types_1.OptionalType(schema) });
 };
 exports.dictionary = dictionary;
 const tuple = (schemas) => new types_1.TupleType(schemas);
@@ -111,7 +110,7 @@ exports.default = {
     null: nullValue,
     enum: enumValue,
     ValidationError: types_1.ValidationError,
-    keySignature: keySignature,
+    keySignature: types_1.keySignature,
     // types
     NumberType: types_1.NumberType,
     BooleanType: types_1.BooleanType,

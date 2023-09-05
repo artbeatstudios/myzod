@@ -1,4 +1,4 @@
-import { keySignature } from './index';
+export const keySignature = Symbol('keySignature');
 
 function clone<T>(value: T): T {
   if (typeof value !== 'object' || value === null) {

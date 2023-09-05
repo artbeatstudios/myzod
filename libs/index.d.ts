@@ -1,7 +1,5 @@
-import { AnyTypeClass, IntersectionType, ValidationError, Type, StringType, NumberType, LiteralType, ObjectType, ArrayType, UnionType, PartialType, TupleType, DateType, LazyType, UndefinedType, NullType, NullableType, EnumType, BooleanType, UnknownType, NumberOptions, Literal, ObjectShape, ObjectOptions, AnyType, ArrayOptions, UnionOptions, PartialOpts, IntersectionResult, DeepPartialShape, PartialShape, Eval, ToUnion, StringTypes, OptionalType, BigIntOptions, BigIntType, StringOptions, EnumOptions } from './types';
-export { ValidationError, Type, type Infer, type AnyType, type ObjectShape, NumberType, BooleanType, StringType, UndefinedType, NullType, ObjectType, ArrayType, TupleType, NullableType, OptionalType, type MappedType, DateType, UnknownType, AnyTypeClass, UnionType, IntersectionType, } from './types';
-declare const keySignature: unique symbol;
-export { keySignature };
+import { AnyTypeClass, IntersectionType, ValidationError, Type, StringType, NumberType, LiteralType, ObjectType, ArrayType, UnionType, PartialType, TupleType, DateType, LazyType, UndefinedType, NullType, NullableType, EnumType, BooleanType, UnknownType, NumberOptions, Literal, ObjectShape, ObjectOptions, AnyType, ArrayOptions, UnionOptions, PartialOpts, IntersectionResult, DeepPartialShape, PartialShape, Eval, ToUnion, StringTypes, OptionalType, BigIntOptions, BigIntType, StringOptions, EnumOptions, keySignature } from './types';
+export { ValidationError, Type, type Infer, type AnyType, type ObjectShape, NumberType, BooleanType, StringType, UndefinedType, NullType, ObjectType, ArrayType, TupleType, NullableType, OptionalType, type MappedType, DateType, UnknownType, AnyTypeClass, UnionType, IntersectionType, keySignature } from './types';
 export declare const string: (opts?: StringOptions) => StringType;
 export declare const boolean: () => BooleanType;
 export declare const number: (opts?: NumberOptions) => NumberType;

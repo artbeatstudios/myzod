@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.LazyType = exports.PartialType = exports.EnumType = exports.IntersectionType = exports.UnionType = exports.TupleType = exports.ArrayType = exports.ObjectType = exports.DateType = exports.NullishType = exports.NullableType = exports.OptionalType = exports.AnyTypeClass = exports.UnknownType = exports.LiteralType = exports.NullType = exports.UndefinedType = exports.BigIntType = exports.NumberType = exports.BooleanType = exports.StringType = exports.ValidationError = exports.Type = void 0;
-const index_1 = require("./index");
+exports.LazyType = exports.PartialType = exports.EnumType = exports.IntersectionType = exports.UnionType = exports.TupleType = exports.ArrayType = exports.ObjectType = exports.DateType = exports.NullishType = exports.NullableType = exports.OptionalType = exports.AnyTypeClass = exports.UnknownType = exports.LiteralType = exports.NullType = exports.UndefinedType = exports.BigIntType = exports.NumberType = exports.BooleanType = exports.StringType = exports.ValidationError = exports.Type = exports.keySignature = void 0;
+exports.keySignature = Symbol('keySignature');
 function clone(value) {
     if (typeof value !== 'object' || value === null) {
         return value;
@@ -591,14 +591,14 @@ class ObjectType extends Type {
         this.defaultValue = opts?.default;
         this.shouldCollectErrors = opts?.collectErrors === true;
         const keys = Object.keys(this.objectShape);
-        this[index_1.keySignature] = this.objectShape[index_1.keySignature];
+        this[exports.keySignature] = this.objectShape[exports.keySignature];
         this[allowUnknownSymbol] = opts?.allowUnknown === true;
         this[shapekeysSymbol] = keys;
         this[coercionTypeSymbol] =
             this.defaultValue !== undefined ||
                 this[allowUnknownSymbol] ||
                 Object.values(this.objectShape).some(schema => schema[coercionTypeSymbol]) ||
-                !!(this.objectShape[index_1.keySignature] && this.objectShape[index_1.keySignature][coercionTypeSymbol]);
+                !!(this.objectShape[exports.keySignature] && this.objectShape[exports.keySignature][coercionTypeSymbol]);
         this._parse = this.selectParser();
     }
     parse(value = typeof this.defaultValue === 'function' ? this.defaultValue() : this.defaultValue, parseOpts = {}) {
@@ -615,7 +615,7 @@ class ObjectType extends Type {
         return new ValidationError(msg, path);
     }
     selectParser() {
-        if (this[shapekeysSymbol].length === 0 && this[index_1.keySignature]) {
+        if (this[shapekeysSymbol].length === 0 && this[exports.keySignature]) {
             if (this[coercionTypeSymbol] && this.shouldCollectErrors) {
                 return this.parseRecordConvCollect;
             }
@@ -627,7 +627,7 @@ class ObjectType extends Type {
             }
             return this.parseRecord;
         }
-        if (this[index_1.keySignature]) {
+        if (this[exports.keySignature]) {
             if (this[coercionTypeSymbol] && this.shouldCollectErrors) {
                 return this.parseMixRecordConvCollect;
             }
@@ -711,7 +711,7 @@ class ObjectType extends Type {
         }
         const keys = this[shapekeysSymbol];
         const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
-        if (allowUnknown && !this.objectShape[index_1.keySignature]) {
+        if (allowUnknown && !this.objectShape[exports.keySignature]) {
             for (const k in value) {
                 if (!keys.includes(k)) {
                     // default is to strip unknown keys
@@ -752,7 +752,7 @@ class ObjectType extends Type {
     parseRecord(value, parseOpts) {
         for (const key in value) {
             try {
-                this[index_1.keySignature].parse(value[key], { suppressPathErrMsg: true });
+                this[exports.keySignature].parse(value[key], { suppressPathErrMsg: true });
             }
             catch (err) {
                 throw this.buildPathError(err, key, parseOpts);
@@ -767,7 +767,7 @@ class ObjectType extends Type {
         let hasError = false;
         const errs = {};
         for (const key in value) {
-            const result = this[index_1.keySignature].try(value[key], { suppressPathErrMsg: true });
+            const result = this[exports.keySignature].try(value[key], { suppressPathErrMsg: true });
             if (result instanceof ValidationError) {
                 hasError = true;
                 errs[key] = this.buildPathError(result, key, { suppressPathErrMsg: true });
@@ -785,7 +785,7 @@ class ObjectType extends Type {
         const convVal = {};
         for (const key in value) {
             try {
-                convVal[key] = this[index_1.keySignature].parse(value[key], { suppressPathErrMsg: true });
+                convVal[key] = this[exports.keySignature].parse(value[key], { suppressPathErrMsg: true });
             }
             catch (err) {
                 throw this.buildPathError(err, key, parseOpts);
@@ -801,7 +801,7 @@ class ObjectType extends Type {
         const errs = {};
         let hasError = false;
         for (const key in value) {
-            const result = this[index_1.keySignature].try(value[key], { suppressPathErrMsg: true });
+            const result = this[exports.keySignature].try(value[key], { suppressPathErrMsg: true });
             if (result instanceof ValidationError) {
                 hasError = true;
                 errs[key] = this.buildPathError(result, key, { suppressPathErrMsg: true });
@@ -821,7 +821,7 @@ class ObjectType extends Type {
     parseMixRecord(value, parseOpts) {
         for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
             try {
-                (this.objectShape[key] || this[index_1.keySignature]).parse(value[key], { suppressPathErrMsg: true });
+                (this.objectShape[key] || this[exports.keySignature]).parse(value[key], { suppressPathErrMsg: true });
             }
             catch (err) {
                 throw this.buildPathError(err, key, parseOpts);
@@ -836,7 +836,7 @@ class ObjectType extends Type {
         let hasError = false;
         const errs = {};
         for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
-            const result = (this.objectShape[key] || this[index_1.keySignature]).try(value[key], {
+            const result = (this.objectShape[key] || this[exports.keySignature]).try(value[key], {
                 suppressPathErrMsg: true,
             });
             if (result instanceof ValidationError) {
@@ -856,7 +856,7 @@ class ObjectType extends Type {
         const convVal = {};
         for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
             try {
-                convVal[key] = (this.objectShape[key] || this[index_1.keySignature]).parse(value[key], {
+                convVal[key] = (this.objectShape[key] || this[exports.keySignature]).parse(value[key], {
                     suppressPathErrMsg: true,
                 });
             }
@@ -874,7 +874,7 @@ class ObjectType extends Type {
         const errs = {};
         let hasError = false;
         for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
-            const result = (this.objectShape[key] || this[index_1.keySignature]).try(value[key], {
+            const result = (this.objectShape[key] || this[exports.keySignature]).try(value[key], {
                 suppressPathErrMsg: true,
             });
             if (result instanceof ValidationError) {
@@ -908,13 +908,13 @@ class ObjectType extends Type {
                 }
                 return acc;
             }, {});
-            const selfKeySig = this.objectShape[index_1.keySignature];
-            const targetKeySig = schema[index_1.keySignature];
+            const selfKeySig = this.objectShape[exports.keySignature];
+            const targetKeySig = schema[exports.keySignature];
             if (selfKeySig && targetKeySig) {
-                intersectShape[index_1.keySignature] = selfKeySig.and(targetKeySig);
+                intersectShape[exports.keySignature] = selfKeySig.and(targetKeySig);
             }
             else if (selfKeySig || targetKeySig) {
-                intersectShape[index_1.keySignature] = selfKeySig || targetKeySig;
+                intersectShape[exports.keySignature] = selfKeySig || targetKeySig;
             }
             return new ObjectType(intersectShape);
         }
@@ -922,8 +922,8 @@ class ObjectType extends Type {
     }
     pick(keys, opts) {
         const pickedShape = keys.reduce((acc, key) => {
-            if (this.objectShape[key] || this.objectShape[index_1.keySignature]) {
-                acc[key] = this.objectShape[key] || this.objectShape[index_1.keySignature];
+            if (this.objectShape[key] || this.objectShape[exports.keySignature]) {
+                acc[key] = this.objectShape[key] || this.objectShape[exports.keySignature];
             }
             return acc;
         }, {});
@@ -931,10 +931,10 @@ class ObjectType extends Type {
     }
     omit(keys, opts) {
         const pickedKeys = this[shapekeysSymbol].filter((x) => !keys.includes(x));
-        if (!this[index_1.keySignature]) {
+        if (!this[exports.keySignature]) {
             return this.pick(pickedKeys, opts);
         }
-        return this.pick(pickedKeys, opts).and(new ObjectType({ [index_1.keySignature]: this[index_1.keySignature] }));
+        return this.pick(pickedKeys, opts).and(new ObjectType({ [exports.keySignature]: this[exports.keySignature] }));
     }
     partial(opts) {
         const originalShape = this.objectShape;
@@ -947,13 +947,13 @@ class ObjectType extends Type {
             }
             return acc;
         }, {});
-        const keysig = originalShape[index_1.keySignature];
+        const keysig = originalShape[exports.keySignature];
         if (keysig) {
             if (opts?.deep) {
-                shape[index_1.keySignature] = toPartialSchema(keysig, opts).optional();
+                shape[exports.keySignature] = toPartialSchema(keysig, opts).optional();
             }
             else {
-                shape[index_1.keySignature] = keysig.optional();
+                shape[exports.keySignature] = keysig.optional();
             }
         }
         // Do not transfer predicates or default value to new object shape as this would not be type-safe
