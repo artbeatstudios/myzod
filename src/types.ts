@@ -915,6 +915,15 @@ export class ObjectType<T extends ObjectShape>
     return this.parseObject;
   }
 
+  private stripUndefined(value: any) {
+    for(const key in value) {
+      if(value[key] === undefined) {
+        delete value[key];
+      }
+    }
+    return value;
+  }
+
   private parseObject(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
     for (const key of this[shapekeysSymbol]) {
       try {
@@ -959,7 +968,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseObjectConv(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1026,7 +1035,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, convVal);
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   private parseRecord(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1059,7 +1068,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseRecordConv(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {

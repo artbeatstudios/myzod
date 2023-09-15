@@ -271,6 +271,7 @@ export declare class ObjectType<T extends ObjectShape> extends Type<InferObjectS
     parse(value?: unknown, parseOpts?: ObjectOptions<any> & PathOptions): InferObjectShape<T>;
     private buildPathError;
     private selectParser;
+    private stripUndefined;
     private parseObject;
     private parseObjectCollect;
     private parseObjectConv;

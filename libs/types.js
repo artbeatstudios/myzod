@@ -650,6 +650,14 @@ class ObjectType extends Type {
         }
         return this.parseObject;
     }
+    stripUndefined(value) {
+        for (const key in value) {
+            if (value[key] === undefined) {
+                delete value[key];
+            }
+        }
+        return value;
+    }
     parseObject(value, parseOpts) {
         for (const key of this[shapekeysSymbol]) {
             try {
@@ -690,7 +698,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseObjectConv(value, parseOpts) {
         const convVal = {};
@@ -752,7 +760,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     parseRecord(value, parseOpts) {
         for (const key in value) {
@@ -784,7 +792,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseRecordConv(value, parseOpts) {
         const convVal = {};
