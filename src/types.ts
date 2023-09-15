@@ -939,7 +939,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseObjectCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1003,7 +1003,7 @@ export class ObjectType<T extends ObjectShape>
         }
       }
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   private parseObjectConvCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1049,7 +1049,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseRecordCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1083,7 +1083,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, convVal);
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   private parseRecordConvCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1105,7 +1105,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, convVal);
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   private parseMixRecord(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1119,7 +1119,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseMixRecordCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1140,7 +1140,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, value);
     }
-    return value as any;
+    return this.stripUndefined(value) as any;
   }
 
   private parseMixRecordConv(
@@ -1161,7 +1161,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, convVal);
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   private parseMixRecordConvCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
@@ -1185,7 +1185,7 @@ export class ObjectType<T extends ObjectShape>
     if (this.predicates) {
       applyPredicates(this.predicates, convVal);
     }
-    return convVal;
+    return this.stripUndefined(convVal);
   }
 
   and<K extends AnyType>(schema: K): IntersectionResult<this, K> {

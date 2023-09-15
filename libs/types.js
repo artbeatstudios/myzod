@@ -674,7 +674,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseObjectCollect(value, parseOpts) {
         let hasError = false;
@@ -732,7 +732,7 @@ class ObjectType extends Type {
                 }
             }
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     parseObjectConvCollect(value, parseOpts) {
         const convVal = {};
@@ -774,7 +774,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseRecordCollect(value, parseOpts) {
         let hasError = false;
@@ -807,7 +807,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     parseRecordConvCollect(value, parseOpts) {
         const convVal = {};
@@ -829,7 +829,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     parseMixRecord(value, parseOpts) {
         for (const key of new Set(Object.keys(value).concat(this[shapekeysSymbol]))) {
@@ -843,7 +843,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseMixRecordCollect(value, parseOpts) {
         let hasError = false;
@@ -863,7 +863,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, value);
         }
-        return value;
+        return this.stripUndefined(value);
     }
     parseMixRecordConv(value, parseOpts) {
         const convVal = {};
@@ -880,7 +880,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     parseMixRecordConvCollect(value, parseOpts) {
         const convVal = {};
@@ -904,7 +904,7 @@ class ObjectType extends Type {
         if (this.predicates) {
             applyPredicates(this.predicates, convVal);
         }
-        return convVal;
+        return this.stripUndefined(convVal);
     }
     and(schema) {
         if (schema instanceof ObjectType) {
