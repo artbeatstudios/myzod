@@ -340,14 +340,14 @@ export class StringType extends Type<string> implements WithPredicate<string>, D
     let coercedValue: string = value as any;
     if (this.coerceFlag === true && typeof value === 'number') {
       coercedValue = value.toString();
-    } else if(this.coerceFlag === 'lower') {
+    } else if (this.coerceFlag === 'lower') {
       coercedValue = coercedValue.toLowerCase();
-    } else if(this.coerceFlag === 'upper') {
+    } else if (this.coerceFlag === 'upper') {
       coercedValue = coercedValue.toUpperCase();
     } else if (typeof value !== 'string') {
       throw this.typeError('expected type to be string but got ' + typeOf(value));
     }
-    if(this.trimFlag) {
+    if (this.trimFlag) {
       coercedValue = coercedValue.trim();
     }
     if (this.predicates) {
@@ -681,7 +681,10 @@ export class NullableType<T extends AnyType> extends Type<Infer<T> | null> imple
 }
 
 type Nullish<T> = T | null | undefined;
-export class NullishType<T extends AnyType> extends Type<Infer<T> | null | undefined> implements Defaultable<Infer<T> | null> {
+export class NullishType<T extends AnyType>
+  extends Type<Infer<T> | null | undefined>
+  implements Defaultable<Infer<T> | null>
+{
   private readonly defaultValue?: Nullish<Infer<T>> | (() => Nullish<Infer<T>>);
   constructor(readonly schema: T) {
     super();
@@ -696,8 +699,8 @@ export class NullishType<T extends AnyType> extends Type<Infer<T> | null | undef
     if (value === null) {
       return null;
     }
-    if(value === undefined) {
-      return undefined
+    if (value === undefined) {
+      return undefined;
     }
     return this.schema.parse(value);
   }
@@ -967,7 +970,11 @@ export class ObjectType<T extends ObjectShape>
         if (schema instanceof UnknownType && !(value as any).hasOwnProperty(key)) {
           throw (schema as any).typeError(`expected key "${key}" of unknown type to be present on object`);
         }
-        convVal[key] = (schema as any).parse((value as any)[key], { suppressPathErrMsg: true });
+        const parsedValue = (schema as any).parse((value as any)[key], { suppressPathErrMsg: true });
+        // don't need to include undefined values
+        if (parsedValue !== undefined) {
+          convVal[key] = parsedValue;
+        }
       } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
@@ -980,9 +987,10 @@ export class ObjectType<T extends ObjectShape>
     const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
     if (allowUnknown && !this.objectShape[keySignature]) {
       for (const k in value) {
-        if (!keys.includes(k)) {
+        const v = (value as any)[k];
+        if (!keys.includes(k) && v !== undefined) {
           // default is to strip unknown keys
-          convVal[k] = (value as any)[k]; 
+          convVal[k] = v;
         }
       }
     }

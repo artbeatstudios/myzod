@@ -700,7 +700,11 @@ class ObjectType extends Type {
                 if (schema instanceof UnknownType && !value.hasOwnProperty(key)) {
                     throw schema.typeError(`expected key "${key}" of unknown type to be present on object`);
                 }
-                convVal[key] = schema.parse(value[key], { suppressPathErrMsg: true });
+                const parsedValue = schema.parse(value[key], { suppressPathErrMsg: true });
+                // don't need to include undefined values
+                if (parsedValue !== undefined) {
+                    convVal[key] = parsedValue;
+                }
             }
             catch (err) {
                 throw this.buildPathError(err, key, parseOpts);
@@ -713,9 +717,10 @@ class ObjectType extends Type {
         const allowUnknown = parseOpts.allowUnknown || this[allowUnknownSymbol];
         if (allowUnknown && !this.objectShape[exports.keySignature]) {
             for (const k in value) {
-                if (!keys.includes(k)) {
+                const v = value[k];
+                if (!keys.includes(k) && v !== undefined) {
                     // default is to strip unknown keys
-                    convVal[k] = value[k];
+                    convVal[k] = v;
                 }
             }
         }
