@@ -659,22 +659,26 @@ class ObjectType extends Type {
         return value;
     }
     parseObject(value, parseOpts) {
+        const convVal = {};
         for (const key of this[shapekeysSymbol]) {
             try {
                 const schema = this.objectShape[key];
                 if (schema instanceof UnknownType && !value.hasOwnProperty(key)) {
                     throw schema.typeError(`expected key "${key}" of unknown type to be present on object`);
                 }
-                schema.parse(value[key], { suppressPathErrMsg: true });
+                const parsedValue = schema.parse(value[key], { suppressPathErrMsg: true });
+                if (parsedValue !== undefined) {
+                    convVal[key] = parsedValue;
+                }
             }
             catch (err) {
                 throw this.buildPathError(err, key, parseOpts);
             }
         }
         if (this.predicates) {
-            applyPredicates(this.predicates, value);
+            applyPredicates(this.predicates, convVal);
         }
-        return this.stripUndefined(value);
+        return this.stripUndefined(convVal);
     }
     parseObjectCollect(value, parseOpts) {
         let hasError = false;

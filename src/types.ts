@@ -925,21 +925,25 @@ export class ObjectType<T extends ObjectShape>
   }
 
   private parseObject(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
+    const convVal: any = {};
     for (const key of this[shapekeysSymbol]) {
       try {
         const schema = (this.objectShape as any)[key];
         if (schema instanceof UnknownType && !(value as any).hasOwnProperty(key)) {
           throw (schema as any).typeError(`expected key "${key}" of unknown type to be present on object`);
         }
-        schema.parse((value as any)[key], { suppressPathErrMsg: true });
+        const parsedValue = schema.parse((value as any)[key], { suppressPathErrMsg: true });
+        if(parsedValue !== undefined) {
+          convVal[key] = parsedValue;
+        }
       } catch (err: any) {
         throw this.buildPathError(err, key, parseOpts);
       }
     }
     if (this.predicates) {
-      applyPredicates(this.predicates, value);
+      applyPredicates(this.predicates, convVal);
     }
-    return this.stripUndefined(value) as any;
+    return this.stripUndefined(convVal) as any;
   }
 
   private parseObjectCollect(value: Object, parseOpts: ObjectOptions<any> & PathOptions): InferObjectShape<T> {
